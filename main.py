@@ -60,7 +60,7 @@ bullet = pygame.image.load('images/bullet.png').convert_alpha()
 bullets = []
 
 counter_label = pygame.font.Font('fonts/Bungee-Regular.ttf', 30)
-hit_counter = 0
+hit_counter = 9999
 
 gameplay = True
 
