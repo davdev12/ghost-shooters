@@ -55,7 +55,7 @@ restart_label = label.render('Try again', False, (235, 52, 52))
 restart_label_rect = restart_label.get_rect(topleft=(180, 200))
 
 bullets_label = pygame.font.Font('fonts/Bungee-Regular.ttf', 25)
-bullets_left = 999
+bullets_left = 10
 bullet = pygame.image.load('images/bullet.png').convert_alpha()
 bullets = []
 
