@@ -148,8 +148,8 @@ while running:
             player_x = 150
             ghost_list_in_game.clear()
             bullets.clear()
-            bullets_left = 999
-            hit_counter = 10000000
+            bullets_left = 10
+            hit_counter = 0
         
     pygame.display.update()
 
