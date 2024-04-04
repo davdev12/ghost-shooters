@@ -1,4 +1,5 @@
 import pygame
+import random
 
 clock = pygame.time.Clock()
 
@@ -38,6 +39,9 @@ player_y = 250
 is_jump = False
 jump_count = 8
 
+lose_sound = pygame.mixer.Sound('sounds/Oops.wav')
+
+shooting_sound = pygame.mixer.Sound('sounds/laser_shoot.wav')
 
 bg_sound = pygame.mixer.Sound('sounds/bg.mp3')
 bg_sound.play(loops=-1)
@@ -50,9 +54,13 @@ lose_label = label.render('You lose!', False, (116, 52, 235))
 restart_label = label.render('Try again', False, (235, 52, 52))
 restart_label_rect = restart_label.get_rect(topleft=(180, 200))
 
-bullets_left = 5
+bullets_label = pygame.font.Font('fonts/Bungee-Regular.ttf', 25)
+bullets_left = 999
 bullet = pygame.image.load('images/bullet.png').convert_alpha()
 bullets = []
+
+counter_label = pygame.font.Font('fonts/Bungee-Regular.ttf', 30)
+hit_counter = 0
 
 gameplay = True
 
@@ -62,8 +70,9 @@ while running:
     screen.blit(bg, (bg_x + 618, 0))
 
     if gameplay:
-
-
+        # display hit_counter
+        screen.blit(counter_label.render(f'Hit ghosts: {hit_counter:03d}', False, (231, 235, 16)), (340, 15))
+        screen.blit(bullets_label.render(f'Bullets left: {bullets_left:03d}', False, (230, 235, 16)), (20, 15))
         player_rect = walk_left[0].get_rect(topleft=(player_x, player_y))
 
         if ghost_list_in_game:
@@ -76,6 +85,8 @@ while running:
 
                 if player_rect.colliderect(el):
                     gameplay = False
+                    bg_sound.stop()
+                    lose_sound.play()
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             screen.blit(walk_left[player_anim_count], (player_x, player_y))
@@ -109,8 +120,6 @@ while running:
         if bg_x == -618:
             bg_x = 0
 
-
-
         if bullets:
             for (i, el) in enumerate(bullets):
                 screen.blit(bullet, (el.x, el.y))
@@ -122,8 +131,11 @@ while running:
                 if ghost_list_in_game:
                     for (index, ghost_el) in enumerate(ghost_list_in_game):
                         if el.colliderect(ghost_el):
+                            
                             ghost_list_in_game.pop(index)
                             bullets.pop(i)
+                            hit_counter += 1
+
     else:
         screen.fill((85, 255, 0))
         screen.blit(lose_label, (180, 100))
@@ -132,10 +144,12 @@ while running:
         mouse = pygame.mouse.get_pos()
         if restart_label_rect.collidepoint(mouse) and pygame.mouse.get_pressed()[0]:
             gameplay = True
+            bg_sound.play(loops=-1)
             player_x = 150
             ghost_list_in_game.clear()
             bullets.clear()
-            bullets_left = 5
+            bullets_left = 999
+            hit_counter = 10000000
         
     pygame.display.update()
 
@@ -144,8 +158,9 @@ while running:
             running = False
             pygame.quit()
         if event.type == ghost_timer:
-            ghost_list_in_game.append(ghost.get_rect(topleft=(620, 250)))
+            ghost_list_in_game.append(ghost.get_rect(topleft=(620, random.randint(150, 250))))
         if gameplay and event.type == pygame.KEYUP and event.key == pygame.K_SPACE and bullets_left > 0:
+            shooting_sound.play()
             bullets.append(bullet.get_rect(topleft=(player_x + 30, player_y + 10)))
             bullets_left -= 1
 
